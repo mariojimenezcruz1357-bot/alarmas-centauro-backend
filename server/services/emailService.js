@@ -9,14 +9,15 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Verificar la conexión
-transporter.verify(function(error, success) {
-  if (error) {
-    console.log('❌ Error en configuración de email:', error);
-  } else {
-    console.log('✅ Servidor de email listo para enviar mensajes');
-  }
-});
+// Verificar la conexión (desactivado temporalmente para evitar bloqueos)
+// transporter.verify(function(error, success) {
+//   if (error) {
+//     console.log('❌ Error en configuración de email:', error);
+//   } else {
+//     console.log('✅ Servidor de email listo para enviar mensajes');
+//   }
+// });
+console.log('⚠️ Verificación de email desactivada (funcionalidad opcional)');
 
 // Función para enviar respuesta al cliente
 const enviarRespuesta = async (contacto, respuesta) => {
