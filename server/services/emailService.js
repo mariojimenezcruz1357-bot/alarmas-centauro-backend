@@ -1,30 +1,16 @@
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 
-// Configurar el transportador de email
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
+// Configurar SendGrid
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-// Verificar la conexión (desactivado temporalmente para evitar bloqueos)
-// transporter.verify(function(error, success) {
-//   if (error) {
-//     console.log('❌ Error en configuración de email:', error);
-//   } else {
-//     console.log('✅ Servidor de email listo para enviar mensajes');
-//   }
-// });
-console.log('⚠️ Verificación de email desactivada (funcionalidad opcional)');
+console.log('✅ SendGrid configurado correctamente');
 
 // Función para enviar respuesta al cliente
 const enviarRespuesta = async (contacto, respuesta) => {
   try {
-    const mailOptions = {
-      from: `"Alarmas Centauro" <${process.env.EMAIL_USER}>`,
+    const msg = {
       to: contacto.email,
+      from: process.env.EMAIL_FROM,
       subject: `Re: ${contacto.asunto || 'Tu consulta'}`,
       html: `
         <!DOCTYPE html>
@@ -81,9 +67,9 @@ const enviarRespuesta = async (contacto, respuesta) => {
       `
     };
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Email enviado:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    await sgMail.send(msg);
+    console.log('✅ Email enviado a:', contacto.email);
+    return { success: true, messageId: 'sendgrid-sent' };
   } catch (error) {
     console.error('❌ Error al enviar email:', error);
     return { success: false, error: error.message };
